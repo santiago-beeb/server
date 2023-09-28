@@ -1,22 +1,20 @@
-import express from 'express'
-import { conn } from './db.js'
-import { PORT } from './config.js'
+import express from "express";
+import morgan from "morgan";
+import cors from "cors";
 
-const app = express()
+//Routes
+import shopRoutes from "./routes/shop.routes";
 
-app.get('/', async (req, res) => {
-    const [rows] = await conn.query('select * from users')
-    res.json(rows)
-})
+const app = express();
 
-app.get('/ping', async (req, res) => {
-    const [result] = await conn.query(`Select "hello world" as Result`);
-    res.json(result[0])
-})
+//settings
+app.set("port", 8055);
 
-app.get('/create', async (req, res) => {
-    const result = await conn.query('insert into users(name) values ("jhon")')
-    res.json(result)
-})
+app.use(morgan("dev"));
+app.use(express.json());
+app.use(cors());
 
-app.listen(PORT)
+//Route
+app.use("/api/shop", shopRoutes);
+
+export { app };
