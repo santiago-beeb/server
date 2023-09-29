@@ -9,7 +9,7 @@ const app = express();
 
 //settings
 const PORT = process.env.PORT || 3001;
-app.set("port", PORT);
+app.listen(PORT);
 
 app.use(morgan("dev"));
 app.use(express.json());
