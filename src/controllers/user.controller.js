@@ -1,16 +1,7 @@
+import config from "../config.js";
 import { getConnection } from "../database/database.js";
 import { encrypt, compare } from "../helper/handleBcrypt.js";
-
-const getUser = async (req, res) => {
-  try {
-    const connection = await getConnection();
-    const result = await connection.query("SELECT * FROM usuario");
-    res.json(result);
-  } catch (error) {
-    res.status(500);
-    res.send(error.message);
-  }
-};
+import jwt from "jsonwebtoken";
 
 const addUser = async (req, res) => {
   try {
@@ -64,9 +55,9 @@ const addUser = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, contrasenia } = req.body;
+    const { usr_email, usr_contrasenia } = req.body;
 
-    if (!email || !contrasenia) {
+    if (!usr_email || !usr_contrasenia) {
       return res
         .status(400)
         .json({ message: "El correo y la contraseña son requeridos" });
@@ -75,7 +66,7 @@ const login = async (req, res) => {
     const connection = await getConnection();
     const userQuery = await connection.query(
       "SELECT * FROM usuario WHERE usr_email = ?",
-      [email]
+      [usr_email]
     );
 
     if (userQuery.length === 0 || userQuery[0].length === 0) {
@@ -88,10 +79,18 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
 
-    const contraseniaValida = await compare(contrasenia, user.usr_contrasenia);
+    const contraseniaValida = await compare(
+      usr_contrasenia,
+      user.usr_contrasenia
+    );
 
     if (contraseniaValida) {
-      return res.status(200).json({ message: "Inicio de sesión exitoso" });
+      // Generar un token para el usuario
+      const token = jwt.sign({ id: user.usr_id }, config.key);
+
+      return res
+        .status(200)
+        .json({ message: "Inicio de sesión exitoso", token });
     } else {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
@@ -102,6 +101,5 @@ const login = async (req, res) => {
 
 export const methods = {
   addUser,
-  getUser,
   login,
 };
