@@ -88,9 +88,11 @@ const login = async (req, res) => {
       // Generar un token para el usuario
       const token = jwt.sign({ id: user.usr_id }, config.key);
 
-      return res
-        .status(200)
-        .json({ message: "Inicio de sesión exitoso", token });
+      return res.status(200).json({
+        message: "Inicio de sesión exitoso",
+        nombre: user.usr_nombre,
+        token,
+      });
     } else {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
@@ -99,7 +101,22 @@ const login = async (req, res) => {
   }
 };
 
+const getDocumentTypes = async (req, res) => {
+  try {
+    const connection = await getConnection();
+    const documentTypesQuery = await connection.query(
+      "SELECT tpd_id, tpd_descripcion FROM tipo_documento"
+    );
+
+    const documentTypes = documentTypesQuery[0];
+    res.status(200).json(documentTypes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const methods = {
   addUser,
   login,
+  getDocumentTypes,
 };
