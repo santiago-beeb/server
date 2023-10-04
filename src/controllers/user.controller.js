@@ -90,6 +90,7 @@ const login = async (req, res) => {
 
       return res.status(200).json({
         message: "Inicio de sesión exitoso",
+        rol: user.usr_rol,
         nombre: user.usr_nombre,
         token,
       });
