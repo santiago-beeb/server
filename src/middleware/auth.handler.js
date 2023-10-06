@@ -5,9 +5,9 @@ const checkAdminRole = async (req, res) => {
     const user = req.user;
 
     if (user && user.rol === 1) {
-      res.json({ isAdmin: true });
+      res.json({ isAdmin: true, nombre: user.nombre });
     } else {
-      res.json({ isAdmin: false });
+      res.json({ isAdmin: false, nombre: user.nombre });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
