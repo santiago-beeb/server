@@ -2,6 +2,7 @@ import config from "../config.js";
 import { getConnection } from "../database/database.js";
 import { encrypt, compare } from "../helper/handleBcrypt.js";
 import jwt from "jsonwebtoken";
+import { generateToken } from "../helper/jwt.js";
 
 const addUser = async (req, res) => {
   try {
@@ -15,10 +16,8 @@ const addUser = async (req, res) => {
       usr_contrasenia,
     } = req.body;
 
-    // Encriptar la contraseña de forma asincrónica
     const contraseniaHash = await encrypt(usr_contrasenia);
 
-    // Crear un objeto de usuario
     const usuario = {
       usr_rol: 2,
       usr_tipo_documento,
@@ -29,10 +28,8 @@ const addUser = async (req, res) => {
       usr_contrasenia: contraseniaHash,
     };
 
-    // Realizar la inserción en la tabla de usuarios
     const result = await connection.query("INSERT INTO usuario SET ?", usuario);
 
-    // Devolver una respuesta exitosa
     res.status(201).json({ message: "Usuario agregado exitosamente", result });
   } catch (error) {
     if (error && error.code === "ER_DUP_ENTRY") {
@@ -43,11 +40,9 @@ const addUser = async (req, res) => {
           .status(400)
           .json({ message: "El número de documento ya está en uso" });
       } else {
-        // Otros errores
         res.status(500).json({ error: error.message });
       }
     } else {
-      // Otros errores
       res.status(500).json({ error: error.message });
     }
   }
@@ -85,12 +80,9 @@ const login = async (req, res) => {
     );
 
     if (contraseniaValida) {
-      // Generar un token para el usuario
-      const token = jwt.sign({ id: user.usr_id }, config.key);
-
+      const token = generateToken(user);
       return res.status(200).json({
         message: "Inicio de sesión exitoso",
-        rol: user.usr_rol,
         nombre: user.usr_nombre,
         token,
       });
@@ -102,7 +94,7 @@ const login = async (req, res) => {
   }
 };
 
-const getDocumentTypes = async (req, res) => {
+const getDocumentTypes = async (_req, res) => {
   try {
     const connection = await getConnection();
     const documentTypesQuery = await connection.query(
