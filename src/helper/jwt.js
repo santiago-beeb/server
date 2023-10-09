@@ -6,7 +6,7 @@ const generateToken = (user) => {
     { id: user.usr_id, rol: user.usr_rol, nombre: user.usr_nombre },
     config.key,
     {
-      expiresIn: "60s",
+      expiresIn: "1h",
     }
   );
 };
