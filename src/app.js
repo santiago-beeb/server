@@ -4,6 +4,7 @@ import cors from "cors";
 
 //Routes
 import userRoutes from "./routes/user.routes.js";
+import productRoutes from "./routes/product.routes.js";
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use(cors());
 
 //Route
 app.use("/api/user", userRoutes);
+app.use("/api/product", productRoutes);
 
 export { app };

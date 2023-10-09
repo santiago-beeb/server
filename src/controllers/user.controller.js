@@ -1,7 +1,5 @@
-import config from "../config.js";
 import { getConnection } from "../database/database.js";
 import { encrypt, compare } from "../helper/handleBcrypt.js";
-import jwt from "jsonwebtoken";
 import { generateToken } from "../helper/jwt.js";
 
 const addUser = async (req, res) => {
