@@ -105,6 +105,72 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const connection = await getConnection();
+    const [product] = await connection.query(
+      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE pdc.pdc_id = ?",
+      [productId]
+    );
+
+    if (product.length > 0) {
+      res.status(200).json(product[0]);
+    } else {
+      res.status(404).json({ error: "Producto no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const editProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const {
+      pdc_descripcion,
+      pdc_fk_seccion,
+      pdc_fk_marca,
+      pdc_fk_color,
+      cant_xs,
+      cant_s,
+      cant_m,
+      cant_l,
+      cant_xl,
+      pdc_valor,
+      pdc_imagen,
+      pdc_estado,
+    } = req.body;
+
+    const connection = await getConnection();
+    const [result] = await connection.query(
+      "UPDATE producto SET pdc_descripcion = ?, pdc_fk_seccion = ?, pdc_fk_marca = ?, pdc_fk_color = ?, cant_xs = ?, cant_s = ?, cant_m = ?, cant_l = ?, cant_xl = ?, pdc_valor = ?, pdc_imagen = ?, pdc_estado = ? WHERE pdc_id = ?",
+      [
+        pdc_descripcion,
+        pdc_fk_seccion,
+        pdc_fk_marca,
+        pdc_fk_color,
+        cant_xs,
+        cant_s,
+        cant_m,
+        cant_l,
+        cant_xl,
+        pdc_valor,
+        pdc_imagen,
+        pdc_estado,
+        productId,
+      ]
+    );
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: "Producto editado con éxito" });
+    } else {
+      res.status(404).json({ error: "Producto no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 const getSeccion = async (req, res) => {
   try {
     const connection = await getConnection();
@@ -155,12 +221,14 @@ const getEstado = async (req, res) => {
 
 export const methods = {
   getProducts,
+  getProduct,
   getProductsForMen,
   getProductsForWomen,
-  addProduct,
-  deleteProduct,
   getSeccion,
+  getEstado,
   getMarca,
   getColor,
-  getEstado,
+  addProduct,
+  deleteProduct,
+  editProduct,
 };

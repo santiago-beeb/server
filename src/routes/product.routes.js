@@ -8,6 +8,9 @@ const router = Router();
 // Ruta para obtener todos los productos
 router.get("/products", productController.getProducts);
 
+// Ruta para obtener un producto
+router.get("/product/:productId", productController.getProduct);
+
 // Nueva ruta para obtener productos para hombres
 router.get("/products-for-men", productController.getProductsForMen);
 
@@ -22,6 +25,13 @@ router.delete(
   "/product-delete/:productId",
   requireAuth,
   productController.deleteProduct
+);
+
+// Ruta para editar un producto específico (solo accesible por administradores)
+router.patch(
+  "/product-edit/:productId",
+  requireAuth,
+  productController.editProduct
 );
 
 router.get("/seccion", requireAuth, productController.getSeccion);
