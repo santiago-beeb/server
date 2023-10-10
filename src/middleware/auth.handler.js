@@ -1,11 +1,12 @@
 import { verifyToken } from "../helper/jwt.js";
 
-const checkAdminRole = async (req, res) => {
+const checkAdminRole = async (req, res, next) => {
   try {
     const user = req.user;
 
     if (user && user.rol === 1) {
       res.json({ isAdmin: true, nombre: user.nombre });
+      next();
     } else {
       res.json({ isAdmin: false, nombre: user.nombre });
     }
