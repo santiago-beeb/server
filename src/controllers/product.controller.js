@@ -16,7 +16,7 @@ const getProductsForMen = async (req, res) => {
   try {
     const connection = await getConnection();
     const [productsForMen] = await connection.query(
-      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE sec.sec_id = 1"
+      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE sec.sec_id = 1 AND est.est_id = 1"
     );
     res.status(200).json(productsForMen);
   } catch (error) {
@@ -28,7 +28,7 @@ const getProductsForWomen = async (req, res) => {
   try {
     const connection = await getConnection();
     const [productsForWomen] = await connection.query(
-      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE sec.sec_id = 2"
+      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE sec.sec_id = 2 AND est.est_id = 1"
     );
     res.status(200).json(productsForWomen);
   } catch (error) {
