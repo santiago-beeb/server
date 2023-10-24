@@ -171,6 +171,65 @@ const editProduct = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const mostSearcher = async (req, res) => {
+  try {
+    const connection = await getConnection();
+
+    const [mostSearchedProducts] = await connection.query(
+      "SELECT p.*, b.contador " +
+        "FROM busquedas b " +
+        "INNER JOIN producto p ON b.pdc_id = p.pdc_id " +
+        "ORDER BY b.contador DESC " +
+        "LIMIT 3"
+    );
+
+    res.json(mostSearchedProducts);
+  } catch (error) {
+    console.error(error.message);
+    res
+      .status(500)
+      .json({ error: "Error al obtener los productos más buscados" });
+  }
+};
+
+const incrementSearcher = async (req, res) => {
+  try {
+    const productId = req.params.id; // Asegúrate de que 'id' es el nombre correcto del parámetro en tu ruta
+    const connection = await getConnection();
+
+    // Primero, verifica si ya existe una entrada en la tabla 'busquedas' para el producto actual.
+    const [existingSearch] = await connection.query(
+      "SELECT contador FROM busquedas WHERE pdc_id = ?",
+      [productId]
+    );
+
+    if (existingSearch.length > 0) {
+      // Si existe una entrada, aumenta el contador en 1.
+      const newCount = existingSearch[0].contador + 1;
+      await connection.query(
+        "UPDATE busquedas SET contador = ? WHERE pdc_id = ?",
+        [newCount, productId]
+      );
+    } else {
+      // Si no existe una entrada, crea una nueva con contador 1.
+      await connection.query(
+        "INSERT INTO busquedas (pdc_id, contador) VALUES (?, 1)",
+        [productId]
+      );
+    }
+
+    res
+      .status(200)
+      .json({ message: "Contador de búsquedas actualizado correctamente" });
+  } catch (error) {
+    console.error(error.message);
+    res
+      .status(500)
+      .json({ error: "Error al actualizar el contador de búsquedas" });
+  }
+};
+
 const getSeccion = async (req, res) => {
   try {
     const connection = await getConnection();
@@ -231,4 +290,6 @@ export const methods = {
   addProduct,
   deleteProduct,
   editProduct,
+  mostSearcher,
+  incrementSearcher,
 };
