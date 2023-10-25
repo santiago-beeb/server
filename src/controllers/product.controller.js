@@ -172,16 +172,45 @@ const editProduct = async (req, res) => {
   }
 };
 
+const updateSize = async (req, res) => {
+  try {
+    const connection = await getConnection();
+    const productId = req.params.productId;
+    const size = req.params.size;
+    const quantity = req.params.quantity;
+
+    const [rows] = await connection.query(
+      `SELECT ${size} FROM producto WHERE pdc_id=?`,
+      [productId]
+    );
+    const sizes = rows[0][size];
+
+    if (quantity > sizes || sizes === 0) {
+      return res.json({ message: "Cantidad sin stock" });
+    }
+
+    const result = await connection.query(
+      `UPDATE producto SET ${size} = ${size} - ? WHERE pdc_id = ?`,
+      [quantity, productId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    return res.json({ message: "Cantidad actualizada" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 const mostSearcher = async (req, res) => {
   try {
     const connection = await getConnection();
 
     const [mostSearchedProducts] = await connection.query(
-      "SELECT p.*, b.contador " +
-        "FROM busquedas b " +
-        "INNER JOIN producto p ON b.pdc_id = p.pdc_id " +
-        "ORDER BY b.contador DESC " +
-        "LIMIT 3"
+      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l,  pdc.cant_xl,  pdc.pdc_valor,  pdc.pdc_imagen,  est.est_nombre AS pdc_fk_estado, b.contador FROM busquedas b INNER JOIN producto pdc ON b.pdc_id = pdc.pdc_id INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE est.est_id = 1 ORDER BY b.contador DESC LIMIT 3"
     );
 
     res.json(mostSearchedProducts);
@@ -292,4 +321,5 @@ export const methods = {
   editProduct,
   mostSearcher,
   incrementSearcher,
+  updateSize,
 };

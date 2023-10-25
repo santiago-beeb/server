@@ -40,6 +40,12 @@ router.patch(
   productController.editProduct
 );
 
+// Ruta para editar una talla
+router.put(
+  "/size-edit/:productId/:size/:quantity",
+  productController.updateSize
+);
+
 router.get("/seccion", requireAuth, productController.getSeccion);
 router.get("/marca", requireAuth, productController.getMarca);
 router.get("/color", requireAuth, productController.getColor);
