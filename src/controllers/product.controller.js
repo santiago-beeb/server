@@ -180,9 +180,7 @@ const addOrden = async (req, res) => {
       ord_valor_total,
       ord_fk_usuario,
       ord_direccion,
-      pdc_id,
-      size,
-      quantity,
+      productos, // Cambio: Esperamos una lista de productos en lugar de un solo producto
     } = req.body;
 
     const orden = {
@@ -196,25 +194,24 @@ const addOrden = async (req, res) => {
     // Inserta la orden en la tabla 'orden'
     const [result] = await connection.query("INSERT INTO orden SET ?", orden);
 
-    const detailOrden = {
-      det_fk_orden: result.insertId,
-      det_fk_producto: pdc_id,
-      det_talla: size,
-      det_cantidad: quantity,
-    };
+    // Itera a través de la lista de productos y crea registros de detalle de orden para cada producto
+    for (const product of productos) {
+      const detailOrden = {
+        det_fk_orden: result.insertId, // Utilizamos el ID de la orden principal
+        det_fk_producto: product.pdc_id,
+        det_talla: product.size,
+        det_cantidad: product.quantity,
+      };
 
-    // Inserta la orden en la tabla 'orden'
-    const [detail] = await connection.query(
-      "INSERT INTO detalle_orden SET ?",
-      detailOrden
-    );
+      // Inserta el detalle de orden en la tabla 'detalle_orden'
+      await connection.query("INSERT INTO detalle_orden SET ?", detailOrden);
 
-    // El ID de la orden recién creada se puede obtener de 'result.insertId'
+      // Aquí también puedes realizar validaciones de stock para cada producto en el bucle.
+    }
 
     return res.json({
       message: "Orden agregada con éxito",
       orderId: result.insertId,
-      detailOrdenID: detail.insertId,
     });
   } catch (error) {
     console.error(error);
