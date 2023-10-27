@@ -222,33 +222,37 @@ const addOrden = async (req, res) => {
 const updateSize = async (req, res) => {
   try {
     const connection = await getConnection();
-    const productId = req.params.productId;
-    const size = req.params.size;
-    const quantity = req.params.quantity;
+    const sizeUpdates = req.body.sizeUpdates;
 
-    const [rows] = await connection.query(
-      `SELECT ${size} FROM producto WHERE pdc_id=?`,
-      [productId]
-    );
-    const sizes = rows[0][size];
+    for (const update of sizeUpdates) {
+      const productId = update.productId;
+      const size = update.size;
+      const quantity = update.quantity;
 
-    if (quantity > sizes || sizes === 0) {
-      return res.json({ message: "Cantidad sin stock" });
+      const [rows] = await connection.query(
+        `SELECT ${size} FROM producto WHERE pdc_id=?`,
+        [productId]
+      );
+      const sizes = rows[0][size];
+
+      if (quantity > sizes || sizes === 0) {
+        return res.json({ message: "Cantidad sin stock" });
+      }
+
+      const result = await connection.query(
+        `UPDATE producto SET ${size} = ${size} - ? WHERE pdc_id = ?`,
+        [quantity, productId]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
     }
 
-    const result = await connection.query(
-      `UPDATE producto SET ${size} = ${size} - ? WHERE pdc_id = ?`,
-      [quantity, productId]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Producto no encontrado" });
-    }
-
-    return res.status(200).json({ message: "Cantidad actualizada" });
+    return res.status(200).json({ message: "Tallas actualizadas" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Error en el servidor" });
   }
 };
 

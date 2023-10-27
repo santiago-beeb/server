@@ -44,10 +44,7 @@ router.patch(
 router.post("/order", productController.addOrden);
 
 // Ruta para editar una talla
-router.patch(
-  "/size-edit/:productId/:size/:quantity",
-  productController.updateSize
-);
+router.patch("/update-sizes", productController.updateSize);
 
 router.get("/seccion", requireAuth, productController.getSeccion);
 router.get("/marca", requireAuth, productController.getMarca);
