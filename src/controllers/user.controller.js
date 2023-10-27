@@ -82,11 +82,9 @@ const activeUser = async (req, res) => {
       );
       res.status(200).json({ message: "Cuenta activada con éxito" });
     } else {
-      res
-        .status(400)
-        .json({
-          message: "Enlace de activación inválido o la cuenta ya está activa",
-        });
+      res.status(400).json({
+        message: "Enlace de activación inválido o la cuenta ya está activa",
+      });
     }
   } catch (error) {
     res.status(500).json({ message: "Error en el servidor" });
@@ -134,6 +132,7 @@ const login = async (req, res) => {
       return res.status(200).json({
         message: "Inicio de sesión exitoso",
         nombre: user.usr_nombre,
+        correo: user.usr_email,
         token,
       });
     } else {

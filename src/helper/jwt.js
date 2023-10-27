@@ -3,7 +3,12 @@ import config from "../config.js";
 
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user.usr_id, rol: user.usr_rol, nombre: user.usr_nombre },
+    {
+      id: user.usr_id,
+      rol: user.usr_rol,
+      nombre: user.usr_nombre,
+      correo: user.usr_email,
+    },
     config.key,
     {
       expiresIn: "1h",
