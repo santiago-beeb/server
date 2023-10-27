@@ -1,3 +1,4 @@
+import { sendOrderEmail } from "../helper/email.helper.js";
 import { getConnection } from "../database/database.js";
 
 const getProducts = async (req, res) => {
@@ -180,7 +181,8 @@ const addOrden = async (req, res) => {
       ord_valor_total,
       ord_fk_usuario,
       ord_direccion,
-      productos, // Cambio: Esperamos una lista de productos en lugar de un solo producto
+      productos,
+      userEmail,
     } = req.body;
 
     const orden = {
@@ -202,13 +204,10 @@ const addOrden = async (req, res) => {
         det_talla: product.size,
         det_cantidad: product.quantity,
       };
-
       // Inserta el detalle de orden en la tabla 'detalle_orden'
       await connection.query("INSERT INTO detalle_orden SET ?", detailOrden);
-
-      // Aquí también puedes realizar validaciones de stock para cada producto en el bucle.
     }
-
+    sendOrderEmail(userEmail, detailOrden);
     return res.json({
       message: "Orden agregada con éxito",
       orderId: result.insertId,
