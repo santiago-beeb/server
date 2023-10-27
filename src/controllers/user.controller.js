@@ -80,12 +80,16 @@ const activeUser = async (req, res) => {
         "UPDATE usuario SET usr_estado = 1 WHERE usr_id = ?",
         [userId]
       );
-      res.send("Tu cuenta ha sido activada. Ahora puedes iniciar sesión.");
+      res.status(200).json({ message: "Cuenta activada con éxito" });
     } else {
-      res.send("Enlace de activación inválido o la cuenta ya está activa.");
+      res
+        .status(400)
+        .json({
+          message: "Enlace de activación inválido o la cuenta ya está activa",
+        });
     }
   } catch (error) {
-    // Manejo de errores
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };
 
