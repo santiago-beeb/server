@@ -172,6 +172,56 @@ const editProduct = async (req, res) => {
   }
 };
 
+const addOrden = async (req, res) => {
+  try {
+    const connection = await getConnection();
+    const {
+      ord_fecha_compra,
+      ord_valor_total,
+      ord_fk_usuario,
+      ord_direccion,
+      pdc_id,
+      size,
+      quantity,
+    } = req.body;
+
+    const orden = {
+      ord_fk_estado: 1,
+      ord_fecha_compra,
+      ord_valor_total,
+      ord_fk_usuario,
+      ord_direccion,
+    };
+
+    // Inserta la orden en la tabla 'orden'
+    const [result] = await connection.query("INSERT INTO orden SET ?", orden);
+
+    const detailOrden = {
+      det_fk_orden: result.insertId,
+      det_fk_producto: pdc_id,
+      det_talla: size,
+      det_cantidad: quantity,
+    };
+
+    // Inserta la orden en la tabla 'orden'
+    const [detail] = await connection.query(
+      "INSERT INTO detalle_orden SET ?",
+      detailOrden
+    );
+
+    // El ID de la orden recién creada se puede obtener de 'result.insertId'
+
+    return res.json({
+      message: "Orden agregada con éxito",
+      orderId: result.insertId,
+      detailOrdenID: detail.insertId,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error al agregar la orden" });
+  }
+};
+
 const updateSize = async (req, res) => {
   try {
     const connection = await getConnection();
@@ -198,7 +248,7 @@ const updateSize = async (req, res) => {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    return res.json({ message: "Cantidad actualizada" });
+    return res.status(200).json({ message: "Cantidad actualizada" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
@@ -322,4 +372,5 @@ export const methods = {
   mostSearcher,
   incrementSearcher,
   updateSize,
+  addOrden,
 };

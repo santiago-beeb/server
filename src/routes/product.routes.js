@@ -40,8 +40,11 @@ router.patch(
   productController.editProduct
 );
 
+// Ruta para agregar orden
+router.post("/order", productController.addOrden);
+
 // Ruta para editar una talla
-router.put(
+router.patch(
   "/size-edit/:productId/:size/:quantity",
   productController.updateSize
 );
