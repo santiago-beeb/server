@@ -1,4 +1,5 @@
 import { getConnection } from "../database/database.js";
+import { sendActivationEmail } from "../helper/email.helper.js";
 import { encrypt, compare } from "../helper/handleBcrypt.js";
 import { generateToken } from "../helper/jwt.js";
 
@@ -24,9 +25,23 @@ const addUser = async (req, res) => {
       usr_apellido,
       usr_email,
       usr_contrasenia: contraseniaHash,
+      usr_estado: 2,
     };
 
-    const result = await connection.query("INSERT INTO usuario SET ?", usuario);
+    const [result] = await connection.query(
+      "INSERT INTO usuario SET ?",
+      usuario
+    );
+
+    // Obtén el ID del usuario insertado
+    const usuarioId = result.insertId;
+    console.log(result.insertId);
+    // Luego de insertar al usuario, genera un enlace de activación
+    const activationLink =
+      "https://general-shop.vercel.app/activate/" + usuarioId;
+
+    // Envía el correo de activación
+    await sendActivationEmail(usr_email, activationLink);
 
     res.status(201).json({ message: "Usuario agregado exitosamente", result });
   } catch (error) {
@@ -43,6 +58,34 @@ const addUser = async (req, res) => {
     } else {
       res.status(500).json({ error: error.message });
     }
+  }
+};
+
+const activeUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const connection = await getConnection();
+
+    // Busca al usuario por su ID
+    const [user] = await connection.query(
+      "SELECT * FROM usuario WHERE usr_id = ?",
+      [userId]
+    );
+
+    // Verifica que el usuario existe y su estado es 2 (inactivo)
+    if (user.length > 0 && user[0].usr_estado === 2) {
+      // Actualiza el estado del usuario a 1 (activo)
+      await connection.query(
+        "UPDATE usuario SET usr_estado = 1 WHERE usr_id = ?",
+        [userId]
+      );
+      res.send("Tu cuenta ha sido activada. Ahora puedes iniciar sesión.");
+    } else {
+      res.send("Enlace de activación inválido o la cuenta ya está activa.");
+    }
+  } catch (error) {
+    // Manejo de errores
   }
 };
 
@@ -67,6 +110,11 @@ const login = async (req, res) => {
     }
 
     const user = userQuery[0][0];
+
+    // Verifica si el usuario está activo (usr_estado = 1)
+    if (user.usr_estado !== 1) {
+      return res.status(401).json({ message: "Usuario no activo" });
+    }
 
     if (!user.usr_contrasenia) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
@@ -110,4 +158,5 @@ export const methods = {
   addUser,
   login,
   getDocumentTypes,
+  activeUser,
 };

@@ -9,5 +9,6 @@ export default {
   user: process.env.USER || "",
   password: process.env.PASSWORD || "",
   port: process.env.DB_PORT || "",
-  key: process.env.SECRET_KEY
+  key: process.env.SECRET_KEY,
+  passemail: process.env.PASSEMAIL,
 };
