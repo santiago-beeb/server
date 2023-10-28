@@ -8,19 +8,88 @@
     ],
     "routes": [
         {
+            "src": "/api/user/login",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/user/signup",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/user/active/:userId",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/user/document-types",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/user/check-admin-role",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/products",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/product/:productId",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/products-for-men",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/products-for-women",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/most-searcher",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/product-add",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/product-search/:id",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/product-delete/:productId",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/product-edit/:productId",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/order",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/update-sizes",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/seccion",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/marca",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/color",
+            "dest": "./index.js"
+        },
+        {
+            "src": "/api/product/estado",
+            "dest": "./index.js"
+        },
+        {
             "src": "/(.*)",
-            "dest": "./index.js",
-            "methods": [
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "OPTIONS"
-            ],
-            "headers": {
-                "Access-Control-Allow-Origin": "*"
-            }
+            "dest": "./index.js"
         }
     ]
 }
