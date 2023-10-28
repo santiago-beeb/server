@@ -207,7 +207,7 @@ const addOrden = async (req, res) => {
       // Inserta el detalle de orden en la tabla 'detalle_orden'
       await connection.query("INSERT INTO detalle_orden SET ?", detailOrden);
     }
-    sendOrderEmail(userEmail, detailOrden);
+    sendOrderEmail(userEmail);
     return res.json({
       message: "Orden agregada con éxito",
       orderId: result.insertId,
