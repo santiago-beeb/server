@@ -9,9 +9,9 @@ import productRoutes from "./routes/product.routes.js";
 const app = express();
 
 // Middleware
-app.use(morgan("dev"));
+//app.use(morgan("dev"));
 app.use(express.json());
-app.use(cors());
+//app.use(cors());
 
 // Route
 app.use("/api/user", userRoutes);
