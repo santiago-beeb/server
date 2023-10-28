@@ -207,7 +207,38 @@ const addOrden = async (req, res) => {
       // Inserta el detalle de orden en la tabla 'detalle_orden'
       await connection.query("INSERT INTO detalle_orden SET ?", detailOrden);
     }
-    sendOrderEmail(userEmail);
+
+    const productInformationList = [];
+
+    for (const product of productos) {
+      const informationOrder = {
+        description: product.pdc_descripcion,
+        size: product.size,
+        quantity: product.quantity,
+        color: product.pdc_fk_color,
+        price: product.pdc_valor,
+      };
+
+      productInformationList.push(informationOrder);
+    }
+
+    // Crear un mensaje que resuma todos los productos
+    const message = `
+${productInformationList
+  .map(
+    (productInfo, index) => `
+  ${index + 1}. Descripción: ${productInfo.description}, Talla: ${
+      productInfo.size
+    }, Cantidad: ${productInfo.quantity}, Color: ${
+      productInfo.color
+    }, Precio: $${productInfo.price}`
+  )
+  .join("\n")}
+  
+La dirección de envío es: ${ord_direccion}`;
+
+    // Enviar el correo electrónico con el mensaje resumido
+    sendOrderEmail(userEmail, message);
     return res.json({
       message: "Orden agregada con éxito",
       orderId: result.insertId,
