@@ -6,4 +6,3 @@ const main = () => {
 };
 
 main();
-a

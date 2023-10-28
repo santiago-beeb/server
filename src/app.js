@@ -8,16 +8,21 @@ import productRoutes from "./routes/product.routes.js";
 
 const app = express();
 
-//settings
-const PORT = process.env.PORT || 3001;
-app.listen(PORT);
-
+// Middleware
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors());
 
-//Route
+// Route
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
+
+// Setting the port
+const PORT = process.env.PORT || 3001;
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 export { app };
