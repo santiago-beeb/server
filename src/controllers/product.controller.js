@@ -266,7 +266,10 @@ const updateSize = async (req, res) => {
       const sizes = rows[0][size];
 
       if (quantity > sizes || sizes === 0) {
-        return res.json({ message: "Cantidad sin stock" });
+        return res.json({
+          message: "Cantidad sin stock",
+          productId: productId,
+        });
       }
 
       const result = await connection.query(
