@@ -118,6 +118,12 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Usuario no activo" });
     }
 
+    let admin = false;
+    if (user.usr_rol === 1) {
+      admin = true;
+    }
+
+    // Verifica si el usuario está activo (usr_estado = 1)
     if (!user.usr_contrasenia) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
@@ -133,6 +139,7 @@ const login = async (req, res) => {
         message: "Inicio de sesión exitoso",
         nombre: user.usr_nombre,
         correo: user.usr_email,
+        admin,
         token,
       });
     } else {

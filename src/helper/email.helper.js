@@ -38,8 +38,10 @@ const sendOrderEmail = async (userEmail, detailOrder) => {
 
     const info = await transporter.sendMail(mailOptions);
     console.log(`Correo de confirmación enviado: ${info.response}`);
+    return true; // Devuelve true si el correo electrónico se envió con éxito
   } catch (error) {
     console.error("Error al enviar el correo de confirmación: ", error);
+    return false; // Devuelve false si hubo un error al enviar el correo electrónico
   }
 };
 

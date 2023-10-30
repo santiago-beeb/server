@@ -238,7 +238,11 @@ ${productInformationList
 La dirección de envío es: ${ord_direccion}`;
 
     // Enviar el correo electrónico con el mensaje resumido
-    sendOrderEmail(userEmail, message);
+    const emailSent = await sendOrderEmail(userEmail, message);
+    if (!emailSent) {
+      throw new Error("Error al enviar el correo de confirmación");
+    }
+
     return res.json({
       message: "Orden agregada con éxito",
       orderId: result.insertId,
