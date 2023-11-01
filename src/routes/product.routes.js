@@ -46,9 +46,9 @@ router.post("/order", productController.addOrden);
 // Ruta para editar una talla
 router.patch("/update-sizes", productController.updateSize);
 
-router.get("/seccion", requireAuth, productController.getSeccion);
-router.get("/marca", requireAuth, productController.getMarca);
-router.get("/color", requireAuth, productController.getColor);
-router.get("/estado", requireAuth, productController.getEstado);
+router.get("/seccion", productController.getSeccion);
+router.get("/marca", productController.getMarca);
+router.get("/color", productController.getColor);
+router.get("/estado", productController.getEstado);
 
 export default router;
