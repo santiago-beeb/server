@@ -85,20 +85,21 @@ const addProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   try {
-    const { productId } = req.params; // Obtén el ID del producto de los parámetros de la URL
+    const { productId } = req.params;
     const connection = await getConnection();
 
-    // Realiza la consulta SQL para eliminar el producto con el ID proporcionado
+    await connection.query("DELETE FROM busquedas WHERE pdc_id = ?", [
+      productId,
+    ]);
+
     const [result] = await connection.query(
       "DELETE FROM producto WHERE pdc_id = ?",
       [productId]
     );
 
     if (result.affectedRows > 0) {
-      // Si al menos una fila se vio afectada, significa que se eliminó un producto
       res.status(200).json({ message: "Producto eliminado con éxito" });
     } else {
-      // Si no se vio afectada ninguna fila, el producto no se encontró en la base de datos
       res.status(404).json({ error: "Producto no encontrado" });
     }
   } catch (error) {
