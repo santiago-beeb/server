@@ -222,23 +222,23 @@ const addOrden = async (req, res) => {
       productInformationList.push(informationOrder);
     }
 
-    // Crear un mensaje que resuma todos los productos
-    const message = `
-${productInformationList
-  .map(
-    (productInfo, index) => `
-  ${index + 1}. Descripción: ${productInfo.description}, Talla: ${
-      productInfo.size
-    }, Cantidad: ${productInfo.quantity}, Color: ${
-      productInfo.color
-    }, Precio: $${productInfo.price}`
-  )
-  .join("\n")}
-  
-La dirección de envío es: ${ord_direccion}`;
+    // Genera el detalle del pedido
+    const detailOrder = productInformationList
+      .map(
+        (productInfo, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${productInfo.description}</td>
+          <td>${productInfo.size}</td>
+          <td>${productInfo.quantity}</td>
+          <td>${productInfo.color}</td>
+          <td>$${productInfo.price}</td>
+        </tr>`
+      )
+      .join("");
 
-    // Enviar el correo electrónico con el mensaje resumido
-    const emailSent = await sendOrderEmail(userEmail, message);
+    // Enviar el correo electrónico con el detalle del pedido
+    const emailSent = await sendOrderEmail(userEmail, detailOrder);
     if (!emailSent) {
       throw new Error("Error al enviar el correo de confirmación");
     }
