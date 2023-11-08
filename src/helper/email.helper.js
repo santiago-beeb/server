@@ -49,32 +49,42 @@ const sendOrderEmail = async (userEmail, detailOrder) => {
       to: userEmail,
       subject: "Confirmación de Pedido",
       html: `
-        <h1>Gracias por tu pedido</h1>
-        <p>A continuación se detallan los productos:</p>
-        <table>
-          <thead>
+        <body>
+          <table width="100%" height="100%" style="margin: 0; padding: 0; border-collapse: collapse;">
             <tr>
-              <th>#</th>
-              <th>Descripción</th>
-              <th>Talla</th>
-              <th>Cantidad</th>
-              <th>Color</th>
-              <th>Precio</th>
+              <td align="center" valign="middle">
+                <div style="width: 300px; text-align: center;">
+                  <h1>Gracias por tu pedido</h1>
+                  <p>A continuación se detallan los productos:</p>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Descripción</th>
+                        <th>Talla</th>
+                        <th>Cantidad</th>
+                        <th>Color</th>
+                        <th>Precio</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${detailOrder}
+                    </tbody>
+                  </table>
+                </div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            ${detailOrder}
-          </tbody>
-        </table>
+          </table>
+        </body>
       `,
     };
 
     // Envía el correo
     const info = await transporter.sendMail(mailOptions);
-    console.log(`Correo de detalles enviado: ${info.response}`);
+    console.log(`Correo de confirmación enviado: ${info.response}`);
     return true; // Devuelve true si el correo electrónico se envió con éxito
   } catch (error) {
-    console.error("Error al enviar el correo de detalles:", error);
+    console.error("Error al enviar el correo de confirmación:", error);
     return false; // Devuelve false si hubo un error al enviar el correo electrónico
   }
 };
