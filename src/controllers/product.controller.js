@@ -88,10 +88,6 @@ const deleteProduct = async (req, res) => {
     const { productId } = req.params;
     const connection = await getConnection();
 
-    await connection.query("DELETE FROM busquedas WHERE pdc_id = ?", [
-      productId,
-    ]);
-
     const [result] = await connection.query(
       "DELETE FROM producto WHERE pdc_id = ?",
       [productId]
