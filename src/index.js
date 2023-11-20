@@ -28,7 +28,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(
   cors({
-    origin: "*",
+    origin: "https://general-shop.vercel.app",
     optionsSuccessStatus: 200,
   })
 );
