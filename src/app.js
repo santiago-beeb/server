@@ -26,13 +26,7 @@ const app = express();
 // Middleware
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://general-shop.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors());
 
 // Rutas
 app.use("/api/user", userRoutes);
