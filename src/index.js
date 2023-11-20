@@ -1,6 +1,6 @@
 import express from "express";
 import morgan from "morgan";
-import cors from "cors";
+//import cors from "cors";
 
 // Routes
 import userRoutes from "./routes/user.routes.js";
@@ -11,14 +11,6 @@ const app = express();
 // Middleware
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://general-shop.vercel.app",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-    optionsSuccessStatus: 204,
-  })
-);
 
 // Routes
 app.use("/api/user", userRoutes);
