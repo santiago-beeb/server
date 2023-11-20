@@ -1,6 +1,6 @@
 import express from "express";
 import morgan from "morgan";
-//import cors from "cors";
+import cors from "cors";
 
 // Routes
 import userRoutes from "./routes/user.routes.js";
@@ -11,6 +11,7 @@ const app = express();
 // Middleware
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cors());
 
 // Routes
 app.use("/api/user", userRoutes);

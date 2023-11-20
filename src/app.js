@@ -1,6 +1,6 @@
 import express from "express";
 import morgan from "morgan";
-//import cors from "cors";
+import cors from "cors";
 
 import { getConnection } from "./database/database.js";
 import Busquedas from "./models/busquedas.js";
@@ -26,6 +26,7 @@ const app = express();
 // Middleware
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cors());
 
 // Rutas
 app.use("/api/user", userRoutes);
