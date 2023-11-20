@@ -29,7 +29,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: "https://general-shop.vercel.app",
-    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
