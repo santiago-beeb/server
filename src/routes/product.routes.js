@@ -8,14 +8,14 @@ const router = Router();
 // Ruta para obtener todos los productos
 router.get("/products", productController.getProducts);
 
-// Ruta para obtener un producto
-router.get("/product/:productId", productController.getProduct);
-
 // Nueva ruta para obtener productos para hombres
 router.get("/products-for-men", productController.getProductsForMen);
 
 // Nueva ruta para obtener productos para mujeres
 router.get("/products-for-women", productController.getProductsForWomen);
+
+// Ruta para obtener un producto
+router.get("/product/:productId", productController.getProduct);
 
 // Nueva ruta para obtener los productos mas buscados
 router.get("/most-searcher", productController.mostSearcher);
@@ -45,6 +45,9 @@ router.post("/order", productController.addOrden);
 
 // Ruta para editar una talla
 router.patch("/update-sizes", productController.updateSize);
+
+// Ruta para obtener una orden
+router.get("/orders/:userId", productController.getOrdersByUser);
 
 router.get("/seccion", productController.getSeccion);
 router.get("/marca", productController.getMarca);

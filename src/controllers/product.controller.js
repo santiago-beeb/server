@@ -1,13 +1,75 @@
+import Producto from "../models/producto.js";
+import SeccionProducto from "../models/seccion_producto.js";
+import MarcaProducto from "../models/marca_producto.js";
+import ColorProducto from "../models/color_producto.js";
+import EstadoProducto from "../models/estado_producto.js";
+import Busquedas from "../models/busquedas.js";
+import Orden from "../models/orden.js";
+import DetalleOrden from "../models/detalle_orden.js";
 import { sendOrderEmail } from "../helper/email.helper.js";
-import { getConnection } from "../database/database.js";
 
 const getProducts = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const [products] = await connection.query(
-      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id"
-    );
-    res.status(200).json(products);
+    const products = await Producto.findAll({
+      include: [
+        {
+          model: SeccionProducto,
+          as: "SeccionProducto",
+          attributes: ["sec_nombre"],
+        },
+        {
+          model: MarcaProducto,
+          as: "MarcaProducto",
+          attributes: ["mar_nombre"],
+        },
+        {
+          model: ColorProducto,
+          as: "ColorProducto",
+          attributes: ["col_nombre"],
+        },
+        {
+          model: EstadoProducto,
+          as: "EstadoProducto",
+          attributes: ["est_nombre"],
+        },
+      ],
+      attributes: [
+        "pdc_id",
+        "pdc_descripcion",
+        "pdc_fk_seccion",
+        "pdc_fk_marca",
+        "pdc_fk_color",
+        "cant_xs",
+        "cant_s",
+        "cant_m",
+        "cant_l",
+        "cant_xl",
+        "pdc_valor",
+        "pdc_imagen",
+        "pdc_estado",
+      ],
+    });
+
+    // Mapea el resultado para el formato deseado
+    const formattedProducts = products.map((product) => {
+      return {
+        pdc_id: product.pdc_id,
+        pdc_descripcion: product.pdc_descripcion,
+        pdc_fk_seccion: product.SeccionProducto.sec_nombre,
+        pdc_fk_marca: product.MarcaProducto.mar_nombre,
+        pdc_fk_color: product.ColorProducto.col_nombre,
+        cant_xs: product.cant_xs,
+        cant_s: product.cant_s,
+        cant_m: product.cant_m,
+        cant_l: product.cant_l,
+        cant_xl: product.cant_xl,
+        pdc_valor: product.pdc_valor,
+        pdc_imagen: product.pdc_imagen,
+        pdc_fk_estado: product.EstadoProducto.est_nombre,
+      };
+    });
+
+    res.status(200).json(formattedProducts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -15,11 +77,70 @@ const getProducts = async (req, res) => {
 
 const getProductsForMen = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const [productsForMen] = await connection.query(
-      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE sec.sec_id = 1 AND est.est_id = 1"
-    );
-    res.status(200).json(productsForMen);
+    const productsForMen = await Producto.findAll({
+      where: {
+        pdc_fk_seccion: 1,
+        pdc_estado: 1,
+      },
+      include: [
+        {
+          model: SeccionProducto,
+          as: "SeccionProducto",
+          attributes: ["sec_nombre"],
+        },
+        {
+          model: MarcaProducto,
+          as: "MarcaProducto",
+          attributes: ["mar_nombre"],
+        },
+        {
+          model: ColorProducto,
+          as: "ColorProducto",
+          attributes: ["col_nombre"],
+        },
+        {
+          model: EstadoProducto,
+          as: "EstadoProducto",
+          attributes: ["est_nombre"],
+        },
+      ],
+      attributes: [
+        "pdc_id",
+        "pdc_descripcion",
+        "pdc_fk_seccion",
+        "pdc_fk_marca",
+        "pdc_fk_color",
+        "cant_xs",
+        "cant_s",
+        "cant_m",
+        "cant_l",
+        "cant_xl",
+        "pdc_valor",
+        "pdc_imagen",
+        "pdc_estado",
+      ],
+    });
+
+    // Mapea el resultado para el formato deseado
+    const formattedProducts = productsForMen.map((product) => {
+      return {
+        pdc_id: product.pdc_id,
+        pdc_descripcion: product.pdc_descripcion,
+        pdc_fk_seccion: product.SeccionProducto.sec_nombre,
+        pdc_fk_marca: product.MarcaProducto.mar_nombre,
+        pdc_fk_color: product.ColorProducto.col_nombre,
+        cant_xs: product.cant_xs,
+        cant_s: product.cant_s,
+        cant_m: product.cant_m,
+        cant_l: product.cant_l,
+        cant_xl: product.cant_xl,
+        pdc_valor: product.pdc_valor,
+        pdc_imagen: product.pdc_imagen,
+        pdc_fk_estado: product.EstadoProducto.est_nombre,
+      };
+    });
+
+    res.status(200).json(formattedProducts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -27,11 +148,70 @@ const getProductsForMen = async (req, res) => {
 
 const getProductsForWomen = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const [productsForWomen] = await connection.query(
-      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE sec.sec_id = 2 AND est.est_id = 1"
-    );
-    res.status(200).json(productsForWomen);
+    const productsForWomen = await Producto.findAll({
+      where: {
+        pdc_fk_seccion: 2,
+        pdc_estado: 1,
+      },
+      include: [
+        {
+          model: SeccionProducto,
+          as: "SeccionProducto",
+          attributes: ["sec_nombre"],
+        },
+        {
+          model: MarcaProducto,
+          as: "MarcaProducto",
+          attributes: ["mar_nombre"],
+        },
+        {
+          model: ColorProducto,
+          as: "ColorProducto",
+          attributes: ["col_nombre"],
+        },
+        {
+          model: EstadoProducto,
+          as: "EstadoProducto",
+          attributes: ["est_nombre"],
+        },
+      ],
+      attributes: [
+        "pdc_id",
+        "pdc_descripcion",
+        "pdc_fk_seccion",
+        "pdc_fk_marca",
+        "pdc_fk_color",
+        "cant_xs",
+        "cant_s",
+        "cant_m",
+        "cant_l",
+        "cant_xl",
+        "pdc_valor",
+        "pdc_imagen",
+        "pdc_estado",
+      ],
+    });
+
+    // Mapea el resultado para el formato deseado
+    const formattedProducts = productsForWomen.map((product) => {
+      return {
+        pdc_id: product.pdc_id,
+        pdc_descripcion: product.pdc_descripcion,
+        pdc_fk_seccion: product.SeccionProducto.sec_nombre,
+        pdc_fk_marca: product.MarcaProducto.mar_nombre,
+        pdc_fk_color: product.ColorProducto.col_nombre,
+        cant_xs: product.cant_xs,
+        cant_s: product.cant_s,
+        cant_m: product.cant_m,
+        cant_l: product.cant_l,
+        cant_xl: product.cant_xl,
+        pdc_valor: product.pdc_valor,
+        pdc_imagen: product.pdc_imagen,
+        pdc_fk_estado: product.EstadoProducto.est_nombre,
+      };
+    });
+
+    res.status(200).json(formattedProducts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -54,30 +234,24 @@ const addProduct = async (req, res) => {
       pdc_estado,
     } = req.body;
 
-    const connection = await getConnection();
-    const [result] = await connection.query(
-      "INSERT INTO producto (pdc_fk_seccion, pdc_descripcion, pdc_fk_marca, pdc_fk_color, cant_xs, cant_s, cant_m, cant_l, cant_xl, pdc_valor, pdc_imagen, pdc_estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [
-        pdc_fk_seccion,
-        pdc_descripcion,
-        pdc_fk_marca,
-        pdc_fk_color,
-        cant_xs,
-        cant_s,
-        cant_m,
-        cant_l,
-        cant_xl,
-        pdc_valor,
-        pdc_imagen,
-        pdc_estado,
-      ]
-    );
+    const newProduct = await Producto.create({
+      pdc_descripcion,
+      pdc_fk_seccion,
+      pdc_fk_marca,
+      pdc_fk_color,
+      cant_xs,
+      cant_s,
+      cant_m,
+      cant_l,
+      cant_xl,
+      pdc_valor,
+      pdc_imagen,
+      pdc_estado,
+    });
 
-    if (result.affectedRows > 0) {
-      res.status(200).json({ message: "Producto agregado con éxito" });
-    } else {
-      res.status(500).json({ error: "No se pudo agregar el producto" });
-    }
+    res
+      .status(200)
+      .json({ message: "Producto agregado con éxito", newProduct });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -86,14 +260,9 @@ const addProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-    const connection = await getConnection();
+    const result = await Producto.destroy({ where: { pdc_id: productId } });
 
-    const [result] = await connection.query(
-      "DELETE FROM producto WHERE pdc_id = ?",
-      [productId]
-    );
-
-    if (result.affectedRows > 0) {
+    if (result) {
       res.status(200).json({ message: "Producto eliminado con éxito" });
     } else {
       res.status(404).json({ error: "Producto no encontrado" });
@@ -106,14 +275,32 @@ const deleteProduct = async (req, res) => {
 const getProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-    const connection = await getConnection();
-    const [product] = await connection.query(
-      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l, pdc.cant_xl, pdc.pdc_valor, pdc.pdc_imagen, est.est_nombre AS pdc_fk_estado FROM producto pdc INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE pdc.pdc_id = ?",
-      [productId]
-    );
+    const product = await Producto.findByPk(productId, {
+      include: [
+        { model: SeccionProducto, as: "SeccionProducto" },
+        { model: MarcaProducto, as: "MarcaProducto" },
+        { model: ColorProducto, as: "ColorProducto" },
+        { model: EstadoProducto, as: "EstadoProducto" },
+      ],
+    });
 
-    if (product.length > 0) {
-      res.status(200).json(product[0]);
+    if (product) {
+      const mappedProduct = {
+        pdc_id: product.pdc_id,
+        pdc_descripcion: product.pdc_descripcion,
+        pdc_fk_seccion: product.SeccionProducto.sec_nombre,
+        pdc_fk_marca: product.MarcaProducto.mar_nombre,
+        pdc_fk_color: product.ColorProducto.col_nombre,
+        cant_xs: product.cant_xs,
+        cant_s: product.cant_s,
+        cant_m: product.cant_m,
+        cant_l: product.cant_l,
+        cant_xl: product.cant_xl,
+        pdc_valor: product.pdc_valor,
+        pdc_imagen: product.pdc_imagen,
+        pdc_fk_estado: product.EstadoProducto.est_nombre,
+      };
+      res.status(200).json(mappedProduct);
     } else {
       res.status(404).json({ error: "Producto no encontrado" });
     }
@@ -140,10 +327,8 @@ const editProduct = async (req, res) => {
       pdc_estado,
     } = req.body;
 
-    const connection = await getConnection();
-    const [result] = await connection.query(
-      "UPDATE producto SET pdc_descripcion = ?, pdc_fk_seccion = ?, pdc_fk_marca = ?, pdc_fk_color = ?, cant_xs = ?, cant_s = ?, cant_m = ?, cant_l = ?, cant_xl = ?, pdc_valor = ?, pdc_imagen = ?, pdc_estado = ? WHERE pdc_id = ?",
-      [
+    const [result] = await Producto.update(
+      {
         pdc_descripcion,
         pdc_fk_seccion,
         pdc_fk_marca,
@@ -156,11 +341,11 @@ const editProduct = async (req, res) => {
         pdc_valor,
         pdc_imagen,
         pdc_estado,
-        productId,
-      ]
+      },
+      { where: { pdc_id: productId } }
     );
 
-    if (result.affectedRows > 0) {
+    if (result > 0) {
       res.status(200).json({ message: "Producto editado con éxito" });
     } else {
       res.status(404).json({ error: "Producto no encontrado" });
@@ -170,9 +355,49 @@ const editProduct = async (req, res) => {
   }
 };
 
+const updateSize = async (req, res) => {
+  try {
+    const sizeUpdates = req.body.sizeUpdates;
+
+    for (const update of sizeUpdates) {
+      const productId = update.productId;
+      const size = update.size;
+      const quantity = update.quantity;
+
+      const product = await Producto.findByPk(productId, {
+        attributes: [size],
+      });
+
+      const sizes = product[size];
+
+      if (quantity > sizes || sizes === 0) {
+        return res.json({
+          message: "Cantidad sin stock",
+          productId: productId,
+        });
+      }
+
+      const updatedProduct = {};
+      updatedProduct[size] = sizes - quantity;
+
+      const result = await Producto.update(updatedProduct, {
+        where: { pdc_id: productId },
+      });
+
+      if (result[0] === 0) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+    }
+
+    return res.status(200).json({ message: "Tallas actualizadas" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error en el servidor" });
+  }
+};
+
 const addOrden = async (req, res) => {
   try {
-    const connection = await getConnection();
     const {
       ord_fecha_compra,
       ord_valor_total,
@@ -191,18 +416,16 @@ const addOrden = async (req, res) => {
     };
 
     // Inserta la orden en la tabla 'orden'
-    const [result] = await connection.query("INSERT INTO orden SET ?", orden);
+    const result = await Orden.create(orden);
 
-    // Itera a través de la lista de productos y crea registros de detalle de orden para cada producto
     for (const product of productos) {
       const detailOrden = {
-        det_fk_orden: result.insertId, // Utilizamos el ID de la orden principal
+        det_fk_orden: result.dataValues.ord_id,
         det_fk_producto: product.pdc_id,
         det_talla: product.size,
         det_cantidad: product.quantity,
       };
-      // Inserta el detalle de orden en la tabla 'detalle_orden'
-      await connection.query("INSERT INTO detalle_orden SET ?", detailOrden);
+      await DetalleOrden.create(detailOrden);
     }
 
     const productInformationList = [];
@@ -219,7 +442,6 @@ const addOrden = async (req, res) => {
       productInformationList.push(informationOrder);
     }
 
-    // Genera el detalle del pedido
     const detailOrder = productInformationList
       .map(
         (productInfo, index) => `
@@ -250,55 +472,76 @@ const addOrden = async (req, res) => {
   }
 };
 
-const updateSize = async (req, res) => {
-  try {
-    const connection = await getConnection();
-    const sizeUpdates = req.body.sizeUpdates;
-
-    for (const update of sizeUpdates) {
-      const productId = update.productId;
-      const size = update.size;
-      const quantity = update.quantity;
-
-      const [rows] = await connection.query(
-        `SELECT ${size} FROM producto WHERE pdc_id=?`,
-        [productId]
-      );
-      const sizes = rows[0][size];
-
-      if (quantity > sizes || sizes === 0) {
-        return res.json({
-          message: "Cantidad sin stock",
-          productId: productId,
-        });
-      }
-
-      const result = await connection.query(
-        `UPDATE producto SET ${size} = ${size} - ? WHERE pdc_id = ?`,
-        [quantity, productId]
-      );
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Producto no encontrado" });
-      }
-    }
-
-    return res.status(200).json({ message: "Tallas actualizadas" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error en el servidor" });
-  }
-};
-
 const mostSearcher = async (req, res) => {
   try {
-    const connection = await getConnection();
+    const mostSearchedProducts = await Busquedas.findAll({
+      where: {},
+      limit: 3,
+      order: [["contador", "DESC"]],
+      include: [
+        {
+          model: Producto,
+          as: "producto",
+          where: {
+            pdc_estado: 1,
+          },
+          include: [
+            {
+              model: SeccionProducto,
+              as: "SeccionProducto",
+              attributes: ["sec_nombre"],
+            },
+            {
+              model: MarcaProducto,
+              as: "MarcaProducto",
+              attributes: ["mar_nombre"],
+            },
+            {
+              model: ColorProducto,
+              as: "ColorProducto",
+              attributes: ["col_nombre"],
+            },
+            {
+              model: EstadoProducto,
+              as: "EstadoProducto",
+              attributes: ["est_nombre"],
+            },
+          ],
+        },
+      ],
+    });
 
-    const [mostSearchedProducts] = await connection.query(
-      "SELECT pdc.pdc_id, pdc.pdc_descripcion, sec.sec_nombre AS pdc_fk_seccion, mar.mar_nombre AS pdc_fk_marca, col.col_nombre AS pdc_fk_color, pdc.cant_xs, pdc.cant_s, pdc.cant_m, pdc.cant_l,  pdc.cant_xl,  pdc.pdc_valor,  pdc.pdc_imagen,  est.est_nombre AS pdc_fk_estado, b.contador FROM busquedas b INNER JOIN producto pdc ON b.pdc_id = pdc.pdc_id INNER JOIN seccion_producto sec ON pdc.pdc_fk_seccion = sec.sec_id INNER JOIN marca_producto mar ON pdc.pdc_fk_marca = mar.mar_id INNER JOIN color_producto col ON pdc.pdc_fk_color = col.col_id INNER JOIN estado_producto est ON pdc.pdc_estado = est.est_id WHERE est.est_id = 1 ORDER BY b.contador DESC LIMIT 3"
-    );
+    // Mapea el resultado para el formato deseado
+    const formattedMostSearchedProducts = mostSearchedProducts.map((search) => {
+      // Comprueba si 'producto' está definido
+      if (!search.producto) {
+        console.log("La asociación 'producto' no está definida.");
+        return {
+          contador: search.contador,
+          // Otras propiedades que desees manejar
+        };
+      }
 
-    res.json(mostSearchedProducts);
+      const product = search.producto;
+      return {
+        pdc_id: product.pdc_id,
+        pdc_descripcion: product.pdc_descripcion,
+        pdc_fk_seccion: product.SeccionProducto.sec_nombre,
+        pdc_fk_marca: product.MarcaProducto.mar_nombre,
+        pdc_fk_color: product.ColorProducto.col_nombre,
+        cant_xs: product.cant_xs,
+        cant_s: product.cant_s,
+        cant_m: product.cant_m,
+        cant_l: product.cant_l,
+        cant_xl: product.cant_xl,
+        pdc_valor: product.pdc_valor,
+        pdc_imagen: product.pdc_imagen,
+        pdc_fk_estado: product.EstadoProducto.est_nombre,
+        contador: search.contador,
+      };
+    });
+
+    res.json(formattedMostSearchedProducts);
   } catch (error) {
     console.error(error.message);
     res
@@ -309,28 +552,14 @@ const mostSearcher = async (req, res) => {
 
 const incrementSearcher = async (req, res) => {
   try {
-    const productId = req.params.id; // Asegúrate de que 'id' es el nombre correcto del parámetro en tu ruta
-    const connection = await getConnection();
+    const productId = req.params.id;
+    const [search, created] = await Busquedas.findOrCreate({
+      where: { pdc_id: productId },
+      defaults: { pdc_id: productId, contador: 1 },
+    });
 
-    // Primero, verifica si ya existe una entrada en la tabla 'busquedas' para el producto actual.
-    const [existingSearch] = await connection.query(
-      "SELECT contador FROM busquedas WHERE pdc_id = ?",
-      [productId]
-    );
-
-    if (existingSearch.length > 0) {
-      // Si existe una entrada, aumenta el contador en 1.
-      const newCount = existingSearch[0].contador + 1;
-      await connection.query(
-        "UPDATE busquedas SET contador = ? WHERE pdc_id = ?",
-        [newCount, productId]
-      );
-    } else {
-      // Si no existe una entrada, crea una nueva con contador 1.
-      await connection.query(
-        "INSERT INTO busquedas (pdc_id, contador) VALUES (?, 1)",
-        [productId]
-      );
+    if (!created) {
+      await search.increment("contador", { by: 1 });
     }
 
     res
@@ -346,10 +575,7 @@ const incrementSearcher = async (req, res) => {
 
 const getSeccion = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const [secciones] = await connection.query(
-      "SELECT sec_id, sec_nombre FROM seccion_producto"
-    );
+    const secciones = await SeccionProducto.findAll();
     res.status(200).json(secciones);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -358,10 +584,7 @@ const getSeccion = async (req, res) => {
 
 const getMarca = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const [marcas] = await connection.query(
-      "SELECT mar_id, mar_nombre FROM marca_producto"
-    );
+    const marcas = await MarcaProducto.findAll();
     res.status(200).json(marcas);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -370,10 +593,7 @@ const getMarca = async (req, res) => {
 
 const getColor = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const [colores] = await connection.query(
-      "SELECT col_id, col_nombre FROM color_producto"
-    );
+    const colores = await ColorProducto.findAll();
     res.status(200).json(colores);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -382,11 +602,57 @@ const getColor = async (req, res) => {
 
 const getEstado = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const [estados] = await connection.query(
-      "SELECT est_id, est_nombre FROM estado_producto"
-    );
+    const estados = await EstadoProducto.findAll();
     res.status(200).json(estados);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getOrdersByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const orders = await Orden.findAll({
+      where: { ord_fk_usuario: userId },
+      include: [
+        {
+          model: DetalleOrden,
+          as: "detalle_ordens",
+          required: false,
+          include: [
+            {
+              model: Producto,
+              as: "producto",
+            },
+          ],
+        },
+      ],
+    });
+
+    const formattedOrders = orders.map((order) => ({
+      orderId: order.ord_id,
+      orderState: order.ord_fk_estado,
+      orderDate: order.ord_fecha_compra,
+      totalValue: order.ord_valor_total,
+      userId: order.ord_fk_usuario,
+      address: order.ord_direccion,
+      orderDetails: order.detalle_ordens.map((detail) => ({
+        detailId: detail.det_id,
+        productId: detail.det_fk_producto,
+        productName: detail.producto.pdc_descripcion,
+        productImage: detail.producto.pdc_imagen,
+        size: detail.det_talla,
+        quantity: detail.det_cantidad,
+      })),
+    }));
+
+    if (orders) {
+      res.status(200).json(formattedOrders);
+    } else {
+      res
+        .status(404)
+        .json({ error: "No se encontraron órdenes para este usuario" });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -397,6 +663,7 @@ export const methods = {
   getProduct,
   getProductsForMen,
   getProductsForWomen,
+  getOrdersByUser,
   getSeccion,
   getEstado,
   getMarca,

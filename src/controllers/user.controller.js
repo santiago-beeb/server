@@ -1,11 +1,11 @@
-import { getConnection } from "../database/database.js";
+import Usuario from "../models/usuario.js";
+import TipoDocumento from "../models/tipo_documento.js";
 import { sendActivationEmail } from "../helper/email.helper.js";
 import { encrypt, compare } from "../helper/handleBcrypt.js";
 import { generateToken } from "../helper/jwt.js";
 
 const addUser = async (req, res) => {
   try {
-    const connection = await getConnection();
     const {
       usr_tipo_documento,
       usr_numero_documento,
@@ -15,40 +15,33 @@ const addUser = async (req, res) => {
       usr_contrasenia,
     } = req.body;
 
-    const contraseniaHash = await encrypt(usr_contrasenia);
+    const passwordHash = await encrypt(usr_contrasenia);
 
-    const usuario = {
+    // Crear un nuevo usuario en la base de datos
+    const newUser = await Usuario.create({
       usr_rol: 2,
       usr_tipo_documento,
       usr_numero_documento,
       usr_nombre,
       usr_apellido,
       usr_email,
-      usr_contrasenia: contraseniaHash,
+      usr_contrasenia: passwordHash,
       usr_estado: 2,
-    };
+    });
 
-    const [result] = await connection.query(
-      "INSERT INTO usuario SET ?",
-      usuario
-    );
-
-    // Obtén el ID del usuario insertado
-    const usuarioId = result.insertId;
-    console.log(result.insertId);
-    // Luego de insertar al usuario, genera un enlace de activación
+    // Generar el enlace de activación
     const activationLink =
-      "https://general-shop.vercel.app/activate/" + usuarioId;
+      "https://general-shop.vercel.app/activate/" + newUser.usr_id;
 
-    // Envía el correo de activación
+    // Enviar el correo de activación
     await sendActivationEmail(usr_email, activationLink);
 
-    res.status(201).json({ message: "Usuario agregado exitosamente", result });
+    res.status(201).json({ message: "Usuario agregado exitosamente", newUser });
   } catch (error) {
-    if (error && error.code === "ER_DUP_ENTRY") {
-      if (error.sqlMessage.includes("usr_email")) {
+    if (error && error.name === "SequelizeUniqueConstraintError") {
+      if (error.fields.usr_email) {
         res.status(400).json({ message: "El correo ya está en uso" });
-      } else if (error.sqlMessage.includes("usr_numero_documento")) {
+      } else if (error.fields.usr_document_number) {
         res
           .status(400)
           .json({ message: "El número de documento ya está en uso" });
@@ -61,25 +54,17 @@ const addUser = async (req, res) => {
   }
 };
 
-const activeUser = async (req, res) => {
+const activateUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const connection = await getConnection();
+    // Buscar al usuario por su ID
+    const user = await Usuario.findByPk(userId);
 
-    // Busca al usuario por su ID
-    const [user] = await connection.query(
-      "SELECT * FROM usuario WHERE usr_id = ?",
-      [userId]
-    );
-
-    // Verifica que el usuario existe y su estado es 2 (inactivo)
-    if (user.length > 0 && user[0].usr_estado === 2) {
-      // Actualiza el estado del usuario a 1 (activo)
-      await connection.query(
-        "UPDATE usuario SET usr_estado = 1 WHERE usr_id = ?",
-        [userId]
-      );
+    // Verificar que el usuario existe y su estado es 2 (inactivo)
+    if (user && user.usr_estado === 2) {
+      // Actualizar el estado del usuario a 1 (activo)
+      await user.update({ usr_estado: 1 });
       res.status(200).json({ message: "Cuenta activada con éxito" });
     } else {
       res.status(400).json({
@@ -101,45 +86,34 @@ const login = async (req, res) => {
         .json({ message: "El correo y la contraseña son requeridos" });
     }
 
-    const connection = await getConnection();
-    const userQuery = await connection.query(
-      "SELECT * FROM usuario WHERE usr_email = ?",
-      [usr_email]
-    );
+    // Buscar al usuario por su correo electrónico
+    const user = await Usuario.findOne({ where: { usr_email } });
 
-    if (userQuery.length === 0 || userQuery[0].length === 0) {
+    if (!user) {
       return res.status(401).json({ message: "Usuario no encontrado" });
     }
 
-    const user = userQuery[0][0];
-
-    // Verifica si el usuario está activo (usr_estado = 1)
+    // Verificar si el usuario está activo (usr_status = 1)
     if (user.usr_estado !== 1) {
       return res.status(401).json({ message: "Usuario no activo" });
     }
 
-    let admin = false;
+    let isAdmin = false;
     if (user.usr_rol === 1) {
-      admin = true;
+      isAdmin = true;
     }
 
-    // Verifica si el usuario está activo (usr_estado = 1)
-    if (!user.usr_contrasenia) {
-      return res.status(401).json({ message: "Contraseña incorrecta" });
-    }
+    // Verificar la contraseña
+    const passwordValid = await compare(usr_contrasenia, user.usr_contrasenia);
 
-    const contraseniaValida = await compare(
-      usr_contrasenia,
-      user.usr_contrasenia
-    );
-
-    if (contraseniaValida) {
+    if (passwordValid) {
+      // Generar el token de autenticación
       const token = generateToken(user);
       return res.status(200).json({
         message: "Inicio de sesión exitoso",
         nombre: user.usr_nombre,
-        correo: user.usr_email,
-        admin,
+        email: user.usr_email,
+        isAdmin,
         token,
       });
     } else {
@@ -150,14 +124,10 @@ const login = async (req, res) => {
   }
 };
 
-const getDocumentTypes = async (_req, res) => {
+const getDocumentTypes = async (req, res) => {
   try {
-    const connection = await getConnection();
-    const documentTypesQuery = await connection.query(
-      "SELECT tpd_id, tpd_descripcion FROM tipo_documento"
-    );
+    const documentTypes = await TipoDocumento.findAll();
 
-    const documentTypes = documentTypesQuery[0];
     res.status(200).json(documentTypes);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -168,5 +138,5 @@ export const methods = {
   addUser,
   login,
   getDocumentTypes,
-  activeUser,
+  activateUser,
 };

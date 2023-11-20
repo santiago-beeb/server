@@ -6,7 +6,7 @@ const router = Router();
 
 router.post("/login", userController.login);
 router.post("/signup", userController.addUser);
-router.patch("/active/:userId", userController.activeUser);
+router.patch("/active/:userId", userController.activateUser);
 router.get("/document-types", userController.getDocumentTypes);
 router.get("/check-admin-role", requireAuth, checkAdminRole);
 
