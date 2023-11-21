@@ -361,7 +361,7 @@ const updateSize = async (req, res) => {
 
     for (const update of sizeUpdates) {
       const productId = update.productId;
-      const size = update.size;
+      const size = update.size.toLowerCase();
       const quantity = update.quantity;
 
       const product = await Producto.findByPk(productId, {
