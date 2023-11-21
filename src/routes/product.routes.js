@@ -2,7 +2,6 @@
 import { Router } from "express";
 import { methods as productController } from "../controllers/product.controller.js";
 import { checkAdminRole, requireAuth } from "../middleware/auth.handler.js";
-import cors from "cors";
 
 const router = Router();
 
@@ -10,7 +9,7 @@ const router = Router();
 router.get("/products", productController.getProducts);
 
 // Nueva ruta para obtener productos para hombres
-router.get("/products-for-men", cors(), productController.getProductsForMen);
+router.get("/products-for-men", productController.getProductsForMen);
 
 // Nueva ruta para obtener productos para mujeres
 router.get("/products-for-women", productController.getProductsForWomen);
