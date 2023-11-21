@@ -28,12 +28,13 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://general-shop.vercel.app",
+    origin: ["https://general-shop.vercel.app", "http://localhost:5173"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
     optionsSuccessStatus: 204,
   })
 );
+
 // Rutas
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
