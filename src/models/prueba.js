@@ -4,18 +4,16 @@ import { getConnection } from "../database/database.js";
 const sequelize = getConnection();
 
 const Prueba = sequelize.define(
-  "prueba",
+  "prueba_base64",
   {
     id: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    nombre: {
-      type: Sequelize.STRING,
-    },
-    descripcion: {
-      type: Sequelize.STRING,
+    base64: {
+      type: Sequelize.BLOB("long"),
+      allowNull: false,
     },
   },
   {

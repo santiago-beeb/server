@@ -64,7 +64,7 @@ const getProducts = async (req, res) => {
         cant_l: product.cant_l,
         cant_xl: product.cant_xl,
         pdc_valor: product.pdc_valor,
-        pdc_imagen: product.pdc_imagen,
+        pdc_imagen: product.pdc_imagen.toString("base64"),
         pdc_fk_estado: product.EstadoProducto.est_nombre,
       };
     });
@@ -135,7 +135,7 @@ const getProductsForMen = async (req, res) => {
         cant_l: product.cant_l,
         cant_xl: product.cant_xl,
         pdc_valor: product.pdc_valor,
-        pdc_imagen: product.pdc_imagen,
+        pdc_imagen: product.pdc_imagen.toString("base64"),
         pdc_fk_estado: product.EstadoProducto.est_nombre,
       };
     });
@@ -206,7 +206,7 @@ const getProductsForWomen = async (req, res) => {
         cant_l: product.cant_l,
         cant_xl: product.cant_xl,
         pdc_valor: product.pdc_valor,
-        pdc_imagen: product.pdc_imagen,
+        pdc_imagen: product.pdc_imagen.toString("base64"),
         pdc_fk_estado: product.EstadoProducto.est_nombre,
       };
     });
@@ -234,6 +234,8 @@ const addProduct = async (req, res) => {
       pdc_estado,
     } = req.body;
 
+    const imageBuffer = Buffer.from(pdc_imagen.split(",")[1], "base64");
+
     const newProduct = await Producto.create({
       pdc_descripcion,
       pdc_fk_seccion,
@@ -245,7 +247,7 @@ const addProduct = async (req, res) => {
       cant_l,
       cant_xl,
       pdc_valor,
-      pdc_imagen,
+      pdc_imagen: imageBuffer,
       pdc_estado,
     });
 
@@ -297,7 +299,7 @@ const getProduct = async (req, res) => {
         cant_l: product.cant_l,
         cant_xl: product.cant_xl,
         pdc_valor: product.pdc_valor,
-        pdc_imagen: product.pdc_imagen,
+        pdc_imagen: product.pdc_imagen.toString("base64"),
         pdc_fk_estado: product.EstadoProducto.est_nombre,
       };
       res.status(200).json(mappedProduct);
@@ -327,6 +329,8 @@ const editProduct = async (req, res) => {
       pdc_estado,
     } = req.body;
 
+    const imageBuffer = Buffer.from(pdc_imagen.split(",")[1], "base64");
+
     const [result] = await Producto.update(
       {
         pdc_descripcion,
@@ -339,7 +343,7 @@ const editProduct = async (req, res) => {
         cant_l,
         cant_xl,
         pdc_valor,
-        pdc_imagen,
+        pdc_imagen: imageBuffer,
         pdc_estado,
       },
       { where: { pdc_id: productId } }
@@ -535,7 +539,7 @@ const mostSearcher = async (req, res) => {
         cant_l: product.cant_l,
         cant_xl: product.cant_xl,
         pdc_valor: product.pdc_valor,
-        pdc_imagen: product.pdc_imagen,
+        pdc_imagen: product.pdc_imagen.toString("base64"),
         pdc_fk_estado: product.EstadoProducto.est_nombre,
         contador: search.contador,
       };

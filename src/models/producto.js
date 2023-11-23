@@ -53,7 +53,7 @@ const Producto = sequelize.define(
       allowNull: false,
     },
     pdc_imagen: {
-      type: Sequelize.STRING(255),
+      type: Sequelize.BLOB("long"),
       allowNull: false,
     },
     pdc_estado: {

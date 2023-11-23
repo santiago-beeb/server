@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import bodyParser from "body-parser";
 
 import { getConnection } from "./database/database.js";
 import Busquedas from "./models/busquedas.js";
@@ -24,6 +25,9 @@ import productRoutes from "./routes/product.routes.js";
 const app = express();
 
 // Middleware
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(
