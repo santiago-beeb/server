@@ -17,7 +17,11 @@ const addUser = async (req, res) => {
       usr_contrasenia,
     } = req.body;
 
-    const passwordHash = await encrypt(usr_contrasenia);
+    //Desifrar
+    const bytes = CryptoJS.AES.decrypt(usr_contrasenia, config.key);
+    const contraseniaDescifrada = bytes.toString(CryptoJS.enc.Utf8);
+
+    const passwordHash = await encrypt(contraseniaDescifrada);
 
     // Crear un nuevo usuario en la base de datos
     const newUser = await Usuario.create({
@@ -38,7 +42,7 @@ const addUser = async (req, res) => {
     // Enviar el correo de activación
     await sendActivationEmail(usr_email, activationLink);
 
-    res.status(201).json({ message: "Usuario agregado exitosamente", newUser });
+    res.status(201).json({ message: "Usuario agregado exitosamente" });
   } catch (error) {
     if (error && error.name === "SequelizeUniqueConstraintError") {
       if (error.fields.usr_email) {
