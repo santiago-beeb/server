@@ -3,6 +3,8 @@ import TipoDocumento from "../models/tipo_documento.js";
 import { sendActivationEmail } from "../helper/email.helper.js";
 import { encrypt, compare } from "../helper/handleBcrypt.js";
 import { generateToken } from "../helper/jwt.js";
+import CryptoJS from "crypto-js";
+import config from "../config.js";
 
 const addUser = async (req, res) => {
   try {
@@ -90,7 +92,7 @@ const login = async (req, res) => {
     const user = await Usuario.findOne({ where: { usr_email } });
 
     if (!user) {
-      return res.status(401).json({ message: "Usuario no encontrado" });
+      return res.status(401).json({ message: "Credenciales incorrectas" });
     }
 
     // Verificar si el usuario está activo (usr_status = 1)
@@ -103,8 +105,15 @@ const login = async (req, res) => {
       isAdmin = true;
     }
 
+    //Desifrar
+    const bytes = CryptoJS.AES.decrypt(usr_contrasenia, config.key);
+    const contraseniaDescifrada = bytes.toString(CryptoJS.enc.Utf8);
+
     // Verificar la contraseña
-    const passwordValid = await compare(usr_contrasenia, user.usr_contrasenia);
+    const passwordValid = await compare(
+      contraseniaDescifrada,
+      user.usr_contrasenia
+    );
 
     if (passwordValid) {
       // Generar el token de autenticación
@@ -117,7 +126,7 @@ const login = async (req, res) => {
         token,
       });
     } else {
-      return res.status(401).json({ message: "Contraseña incorrecta" });
+      return res.status(401).json({ message: "Credenciales incorrectas" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
