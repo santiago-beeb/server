@@ -10,5 +10,3 @@ export default {
   port: process.env.DB_PORT || "",
   key: process.env.SECRET_KEY
 };
-
-//prueba de commit
