@@ -51,10 +51,11 @@ app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto ${PORT}`);
 });
 
-//Configuración inicial
+// Configuración inicial
 (async () => {
   try {
     const sequelize = getConnection();
+    await sequelize.authenticate();
 
     await sequelize.sync();
 

@@ -20,11 +20,11 @@ router.get("/product/:productId", productController.getProduct);
 // Nueva ruta para obtener los productos mas buscados
 router.get("/most-searcher", productController.mostSearcher);
 
-// Ruta para agregar productos (solo accesible por administradores)
-router.post("/product-add", requireAuth, productController.addProduct);
-
 // Ruta para incrementar el contador de búsquedas para un producto específico
 router.post("/product-search/:id", productController.incrementSearcher);
+
+// Ruta para agregar productos (solo accesible por administradores)
+router.post("/product-add", requireAuth, productController.addProduct);
 
 // Ruta para eliminar un producto específico (solo accesible por administradores)
 router.delete(
