@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import bodyParser from "body-parser";
+import compression from "compression";
 
 import { getConnection } from "./database/database.js";
 import Busquedas from "./models/busquedas.js";
@@ -27,6 +28,7 @@ const app = express();
 // Middleware
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(compression());
 
 app.use(morgan("dev"));
 app.use(express.json());
