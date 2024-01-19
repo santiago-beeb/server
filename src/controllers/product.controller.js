@@ -9,18 +9,54 @@ const getProducts = async (req, res) => {
   }
 };
 
+// const getProductsForMen = async (req, res) => {
+//   try {
+//     const productsForMen = await productService.getProductsForMen();
+//     res.status(200).json(productsForMen);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 const getProductsForMen = async (req, res) => {
   try {
-    const productsForMen = await productService.getProductsForMen();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 9;
+    const selectedBrand = req.query.brand;
+    const selectedColor = req.query.color;
+    const productsForMen = await productService.getProductsForMen(
+      page,
+      limit,
+      selectedBrand,
+      selectedColor
+    );
     res.status(200).json(productsForMen);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+// const getProductsForWomen = async (req, res) => {
+//   try {
+//     const productsForWomen = await productService.getProductsForWomen();
+//     res.status(200).json(productsForWomen);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 const getProductsForWomen = async (req, res) => {
   try {
-    const productsForWomen = await productService.getProductsForWomen();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 9;
+    const selectedBrand = req.query.brand;
+    const selectedColor = req.query.color;
+    const productsForWomen = await productService.getProductsForWomen(
+      page,
+      limit,
+      selectedBrand,
+      selectedColor
+    );
     res.status(200).json(productsForWomen);
   } catch (error) {
     res.status(500).json({ error: error.message });

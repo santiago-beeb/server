@@ -7,6 +7,7 @@ import Busquedas from "../models/busquedas.js";
 import Orden from "../models/orden.js";
 import DetalleOrden from "../models/detalle_orden.js";
 import { sendOrderEmail } from "../helper/email.helper.js";
+import { Sequelize } from "sequelize";
 
 export const getProducts = async () => {
   try {
@@ -73,13 +74,99 @@ export const getProducts = async () => {
   }
 };
 
-export const getProductsForMen = async () => {
+// export const getProductsForMenSearcher = async () => {
+//   try {
+//     const productsForMen = await Producto.findAll({
+//       where: {
+//         pdc_fk_seccion: 1,
+//         pdc_estado: 1,
+//       },
+//       limite: 9,
+//       include: [
+//         {
+//           model: SeccionProducto,
+//           as: "SeccionProducto",
+//           attributes: ["sec_nombre"],
+//         },
+//         {
+//           model: MarcaProducto,
+//           as: "MarcaProducto",
+//           attributes: ["mar_nombre"],
+//         },
+//         {
+//           model: ColorProducto,
+//           as: "ColorProducto",
+//           attributes: ["col_nombre"],
+//         },
+//         {
+//           model: EstadoProducto,
+//           as: "EstadoProducto",
+//           attributes: ["est_nombre"],
+//         },
+//       ],
+//       attributes: [
+//         "pdc_id",
+//         "pdc_descripcion",
+//         "pdc_fk_seccion",
+//         "pdc_fk_marca",
+//         "pdc_fk_color",
+//         "cant_xs",
+//         "cant_s",
+//         "cant_m",
+//         "cant_l",
+//         "cant_xl",
+//         "pdc_valor",
+//         "pdc_imagen",
+//         "pdc_estado",
+//       ],
+//     });
+
+//     // Mapea el resultado para el formato deseado
+//     const formattedProducts = productsForMen.map((product) => ({
+//       pdc_id: product.pdc_id,
+//       pdc_descripcion: product.pdc_descripcion,
+//       pdc_fk_seccion: product.SeccionProducto.sec_nombre,
+//       pdc_fk_marca: product.MarcaProducto.mar_nombre,
+//       pdc_fk_color: product.ColorProducto.col_nombre,
+//       cant_xs: product.cant_xs,
+//       cant_s: product.cant_s,
+//       cant_m: product.cant_m,
+//       cant_l: product.cant_l,
+//       cant_xl: product.cant_xl,
+//       pdc_valor: product.pdc_valor,
+//       pdc_imagen: product.pdc_imagen.toString("base64"),
+//       pdc_fk_estado: product.EstadoProducto.est_nombre,
+//     }));
+
+//     return formattedProducts;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+export const getProductsForMen = async (
+  page,
+  limit,
+  selectedBrand,
+  selectedColor
+) => {
   try {
-    const productsForMen = await Producto.findAll({
-      where: {
-        pdc_fk_seccion: 1,
-        pdc_estado: 1,
-      },
+    const offset = (page - 1) * limit;
+    const whereClause = {
+      pdc_fk_seccion: 1,
+      pdc_estado: 1,
+    };
+
+    if (selectedBrand) {
+      whereClause.pdc_fk_marca = selectedBrand;
+    }
+
+    if (selectedColor) {
+      whereClause.pdc_fk_color = selectedColor;
+    }
+
+    const productsForMen = await Producto.findAndCountAll({
+      where: whereClause,
       include: [
         {
           model: SeccionProducto,
@@ -117,10 +204,12 @@ export const getProductsForMen = async () => {
         "pdc_imagen",
         "pdc_estado",
       ],
+      limit: limit,
+      offset: offset,
     });
 
     // Mapea el resultado para el formato deseado
-    const formattedProducts = productsForMen.map((product) => ({
+    const formattedProducts = productsForMen.rows.map((product) => ({
       pdc_id: product.pdc_id,
       pdc_descripcion: product.pdc_descripcion,
       pdc_fk_seccion: product.SeccionProducto.sec_nombre,
@@ -136,19 +225,107 @@ export const getProductsForMen = async () => {
       pdc_fk_estado: product.EstadoProducto.est_nombre,
     }));
 
-    return formattedProducts;
+    return {
+      total: productsForMen.count,
+      products: formattedProducts,
+    };
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-export const getProductsForWomen = async () => {
+// export const getProductsForWomenSearcher = async () => {
+//   try {
+//     const productsForWomen = await Producto.findAll({
+//       where: {
+//         pdc_fk_seccion: 2,
+//         pdc_estado: 1,
+//       },
+//       include: [
+//         {
+//           model: SeccionProducto,
+//           as: "SeccionProducto",
+//           attributes: ["sec_nombre"],
+//         },
+//         {
+//           model: MarcaProducto,
+//           as: "MarcaProducto",
+//           attributes: ["mar_nombre"],
+//         },
+//         {
+//           model: ColorProducto,
+//           as: "ColorProducto",
+//           attributes: ["col_nombre"],
+//         },
+//         {
+//           model: EstadoProducto,
+//           as: "EstadoProducto",
+//           attributes: ["est_nombre"],
+//         },
+//       ],
+//       attributes: [
+//         "pdc_id",
+//         "pdc_descripcion",
+//         "pdc_fk_seccion",
+//         "pdc_fk_marca",
+//         "pdc_fk_color",
+//         "cant_xs",
+//         "cant_s",
+//         "cant_m",
+//         "cant_l",
+//         "cant_xl",
+//         "pdc_valor",
+//         "pdc_imagen",
+//         "pdc_estado",
+//       ],
+//     });
+
+//     // Mapea el resultado para el formato deseado
+//     const formattedProducts = productsForWomen.map((product) => ({
+//       pdc_id: product.pdc_id,
+//       pdc_descripcion: product.pdc_descripcion,
+//       pdc_fk_seccion: product.SeccionProducto.sec_nombre,
+//       pdc_fk_marca: product.MarcaProducto.mar_nombre,
+//       pdc_fk_color: product.ColorProducto.col_nombre,
+//       cant_xs: product.cant_xs,
+//       cant_s: product.cant_s,
+//       cant_m: product.cant_m,
+//       cant_l: product.cant_l,
+//       cant_xl: product.cant_xl,
+//       pdc_valor: product.pdc_valor,
+//       pdc_imagen: product.pdc_imagen.toString("base64"),
+//       pdc_fk_estado: product.EstadoProducto.est_nombre,
+//     }));
+
+//     return formattedProducts;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+export const getProductsForWomen = async (
+  page,
+  limit,
+  selectedBrand,
+  selectedColor
+) => {
   try {
-    const productsForWomen = await Producto.findAll({
-      where: {
-        pdc_fk_seccion: 2,
-        pdc_estado: 1,
-      },
+    const offset = (page - 1) * limit;
+    const whereClause = {
+      pdc_fk_seccion: 2,
+      pdc_estado: 1,
+    };
+
+    if (selectedBrand) {
+      whereClause.pdc_fk_marca = selectedBrand;
+    }
+
+    if (selectedColor) {
+      whereClause.pdc_fk_color = selectedColor;
+    }
+
+    const productsForWomen = await Producto.findAndCountAll({
+      where: whereClause,
       include: [
         {
           model: SeccionProducto,
@@ -186,10 +363,12 @@ export const getProductsForWomen = async () => {
         "pdc_imagen",
         "pdc_estado",
       ],
+      limit: limit,
+      offset: offset,
     });
 
     // Mapea el resultado para el formato deseado
-    const formattedProducts = productsForWomen.map((product) => ({
+    const formattedProducts = productsForWomen.rows.map((product) => ({
       pdc_id: product.pdc_id,
       pdc_descripcion: product.pdc_descripcion,
       pdc_fk_seccion: product.SeccionProducto.sec_nombre,
@@ -205,7 +384,10 @@ export const getProductsForWomen = async () => {
       pdc_fk_estado: product.EstadoProducto.est_nombre,
     }));
 
-    return formattedProducts;
+    return {
+      total: productsForWomen.count,
+      products: formattedProducts,
+    };
   } catch (error) {
     throw new Error(error.message);
   }

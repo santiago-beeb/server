@@ -51,17 +51,17 @@ app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto ${PORT}`);
 });
 
-//Configuración inicial
-// (async () => {
-//   try {
-//     const sequelize = getConnection();
+// //Configuración inicial
+(async () => {
+  try {
+    const sequelize = getConnection();
 
-//     await sequelize.sync();
+    await sequelize.sync();
 
-//     console.log("Tablas creadas y modelos sincronizados con éxito.");
-//   } catch (error) {
-//     console.error("Error en la configuración inicial:", error);
-//   }
-// })();
+    console.log("Tablas creadas y modelos sincronizados con éxito.");
+  } catch (error) {
+    console.error("Error en la configuración inicial:", error);
+  }
+})();
 
 export { app };
