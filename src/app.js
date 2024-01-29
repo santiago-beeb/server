@@ -4,18 +4,6 @@ import cors from "cors";
 import bodyParser from "body-parser";
 
 import { getConnection } from "./database/database.js";
-import Busquedas from "./models/busquedas.js";
-import ColorProducto from "./models/color_producto.js";
-import DetalleOrden from "./models/detalle_orden.js";
-import EstadoProducto from "./models/estado_producto.js";
-import MarcaProducto from "./models/marca_producto.js";
-import Orden from "./models/orden.js";
-import Producto from "./models/producto.js";
-import Prueba from "./models/prueba.js";
-import Rol from "./models/rol.js";
-import SeccionProducto from "./models/seccion_producto.js";
-import TipoDocumento from "./models/tipo_documento.js";
-import Usuario from "./models/usuario.js";
 import "./models/associations.js";
 
 // Rutas

@@ -544,9 +544,10 @@ export const updateSize = async (sizeUpdates) => {
       const sizes = product[size];
 
       if (quantity > sizes || sizes === 0) {
-        throw new Error(
-          `Cantidad sin stock para el producto con ID ${productId}`
-        );
+        return {
+          status: 400,
+          productId: productId,
+        };
       }
 
       const updatedProduct = {};

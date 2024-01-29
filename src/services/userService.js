@@ -19,6 +19,16 @@ export const addUser = async ({
     const bytes = CryptoJS.AES.decrypt(usr_contrasenia, config.key);
     const contraseniaDescifrada = bytes.toString(CryptoJS.enc.Utf8);
 
+    // Validar longitud y complejidad de la contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{5,}$/;
+    if (!passwordRegex.test(contraseniaDescifrada)) {
+      throw {
+        status: 400,
+        message:
+          "La contraseña debe tener minimo 5 caracteres, incluyendo al menos una mayúscula, una minúscula y un número.",
+      };
+    }
+
     const passwordHash = await encrypt(contraseniaDescifrada);
 
     // Crear un nuevo usuario en la base de datos
