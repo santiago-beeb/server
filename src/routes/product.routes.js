@@ -46,8 +46,11 @@ router.post("/order", productController.addOrden);
 // Ruta para editar una talla
 router.patch("/update-sizes", productController.updateSize);
 
-// Ruta para obtener una orden
+// Ruta para obtener todas las ordenes
 router.get("/orders/:userId", productController.getOrdersByUser);
+
+// Ruta para obtener detalle de ordenes
+router.get("/detail-order/:orderId", productController.getDetailOrder);
 
 router.get("/seccion", productController.getSeccion);
 router.get("/marca", productController.getMarca);

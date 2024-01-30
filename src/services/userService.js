@@ -128,6 +128,7 @@ export const login = async ({ usr_email, usr_contrasenia }) => {
       const token = generateToken(user);
       return {
         message: "Inicio de sesión exitoso",
+        id: user.usr_id,
         nombre: user.usr_nombre,
         email: user.usr_email,
         isAdmin,

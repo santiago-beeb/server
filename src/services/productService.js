@@ -678,7 +678,6 @@ export const mostSearcher = async () => {
         console.log("La asociación 'producto' no está definida.");
         return {
           contador: search.contador,
-          // Otras propiedades que desees manejar
         };
       }
 
@@ -782,23 +781,32 @@ export const getOrdersByUser = async (userId) => {
     });
 
     const formattedOrders = orders.map((order) => ({
-      orderId: order.ord_id,
-      orderState: order.ord_fk_estado,
-      orderDate: order.ord_fecha_compra,
-      totalValue: order.ord_valor_total,
-      userId: order.ord_fk_usuario,
-      address: order.ord_direccion,
-      orderDetails: order.detalle_ordens.map((detail) => ({
-        detailId: detail.det_id,
-        productId: detail.det_fk_producto,
-        productName: detail.producto.pdc_descripcion,
-        productImage: detail.producto.pdc_imagen,
-        size: detail.det_talla,
-        quantity: detail.det_cantidad,
+      orden_id: order.ord_id,
+      orden_estado: order.ord_fk_estado,
+      orden_fecha: order.ord_fecha_compra,
+      orden_valor_total: order.ord_valor_total,
+      user_id: order.ord_fk_usuario,
+      orden_direccion: order.ord_direccion,
+      detalle_orden: order.detalle_ordens.map((detail) => ({
+        detalle_id: detail.det_id,
+        producto_id: detail.det_fk_producto,
+        producto_nombre: detail.producto.pdc_descripcion,
+        producto_imagen: detail.producto.pdc_imagen.toString("base64"),
+        producto_talla: detail.det_talla,
+        cantidad: detail.det_cantidad,
       })),
     }));
 
     return formattedOrders;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getDetailOrder = async (orderId) => {
+  try {
+    const detailOrder = await DetalleOrden.findByPk(orderId);
+    return detailOrder;
   } catch (error) {
     throw new Error(error.message);
   }

@@ -206,6 +206,17 @@ const getOrdersByUser = async (req, res) => {
   }
 };
 
+const getDetailOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const formattedDetailOrder = await productService.getDetailOrder(orderId);
+    res.status(200).json(formattedDetailOrder);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const methods = {
   getProducts,
   getProduct,
@@ -223,4 +234,5 @@ export const methods = {
   incrementSearcher,
   updateSize,
   addOrden,
+  getDetailOrder
 };
