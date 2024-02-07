@@ -7,7 +7,6 @@ import Busquedas from "../models/busquedas.js";
 import Orden from "../models/orden.js";
 import DetalleOrden from "../models/detalle_orden.js";
 import { sendOrderEmail } from "../helper/email.helper.js";
-import { Sequelize } from "sequelize";
 
 export const getProducts = async () => {
   try {

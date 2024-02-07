@@ -21,7 +21,7 @@ const getProducts = async (req, res) => {
 const getProductsForMen = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 9;
+    const limit = parseInt(req.query.limit) || Number.MAX_SAFE_INTEGER;
     const selectedBrand = req.query.brand;
     const selectedColor = req.query.color;
     const productsForMen = await productService.getProductsForMen(
@@ -48,7 +48,7 @@ const getProductsForMen = async (req, res) => {
 const getProductsForWomen = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 9;
+    const limit = parseInt(req.query.limit) || Number.MAX_SAFE_INTEGER;
     const selectedBrand = req.query.brand;
     const selectedColor = req.query.color;
     const productsForWomen = await productService.getProductsForWomen(
@@ -234,5 +234,5 @@ export const methods = {
   incrementSearcher,
   updateSize,
   addOrden,
-  getDetailOrder
+  getDetailOrder,
 };
