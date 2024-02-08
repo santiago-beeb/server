@@ -773,6 +773,7 @@ export const getOrdersByUser = async (userId) => {
             {
               model: Producto,
               as: "producto",
+              paranoid: false,
             },
           ],
         },

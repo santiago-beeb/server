@@ -63,6 +63,8 @@ const Producto = sequelize.define(
   },
   {
     freezeTableName: true,
+    paranoid: true,
+    deletedAt: "deleted_at",
   }
 );
 
