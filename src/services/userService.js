@@ -138,7 +138,7 @@ export const login = async ({ usr_email, usr_contrasenia }) => {
       throw { status: 401, message: "Credenciales incorrectas" };
     }
   } catch (error) {
-    throw { status: 500, error: error.message };
+    throw { status: error.status, message: error.message };
   }
 };
 

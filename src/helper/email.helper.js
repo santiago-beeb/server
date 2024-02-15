@@ -41,7 +41,7 @@ const sendActivationEmail = async (userEmail, activationLink) => {
 };
 
 // Función para enviar un correo de confirmación de pedido
-const sendOrderEmail = async (userEmail, detailOrder) => {
+const sendOrderEmail = async (userEmail, detailOrder, ord_valor_total) => {
   try {
     // Configura el mensaje de correo
     const mailOptions = {
@@ -69,6 +69,12 @@ const sendOrderEmail = async (userEmail, detailOrder) => {
                     </thead>
                     <tbody>
                       ${detailOrder}
+                      <tr>
+  <td colspan="5" style="text-align: right; font-weight: bold; background-color: #f0f0f0; padding: 10px;">Total:</td>
+  <td style="text-align: right; font-weight: bold; background-color: #f0f0f0; padding: 10px;">$${ord_valor_total.toFixed(
+    2
+  )}</td>
+</tr>
                     </tbody>
                   </table>
                 </div>

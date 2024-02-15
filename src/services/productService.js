@@ -611,18 +611,23 @@ export const addOrden = async (orderData) => {
       .map(
         (productInfo, index) => `
         <tr>
-          <td>${index + 1}</td>
-          <td>${productInfo.description}</td>
-          <td>${productInfo.size}</td>
-          <td>${productInfo.quantity}</td>
-          <td>${productInfo.color}</td>
-          <td>$${productInfo.price}</td>
-        </tr>`
+  <td style="text-align: left;">${index + 1}</td>
+  <td style="text-align: left;">${productInfo.description}</td>
+  <td style="text-align: left;">${productInfo.size}</td>
+  <td style="text-align: right;">${productInfo.quantity}</td>
+  <td style="text-align: left;">${productInfo.color}</td>
+  <td style="text-align: right;">$${productInfo.price.toFixed(2)}</td>
+</tr>
+`
       )
       .join("");
 
     // Enviar el correo electrónico con el detalle del pedido
-    const emailSent = await sendOrderEmail(userEmail, detailOrder);
+    const emailSent = await sendOrderEmail(
+      userEmail,
+      detailOrder,
+      ord_valor_total
+    );
     if (!emailSent) {
       throw new Error("Error al enviar el correo de confirmación");
     }

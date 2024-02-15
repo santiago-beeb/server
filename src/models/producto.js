@@ -60,6 +60,10 @@ const Producto = sequelize.define(
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    deleted_at: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true,
