@@ -105,7 +105,7 @@ export const login = async ({ usr_email, usr_contrasenia }) => {
 
     // Verificar si el usuario está activo (usr_status = 1)
     if (user.usr_estado !== 1) {
-      throw { status: 401, message: "Usuario no activo" };
+      throw { status: 403, message: "Usuario no activo" };
     }
 
     let isAdmin = false;
