@@ -49,9 +49,16 @@ app.use("/api/product", productRoutes);
 const PORT = process.env.PORT || 3001;
 
 // Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor iniciado en el puerto ${PORT}`);
-});
+//app.listen(PORT, () => {
+//  console.log(`Servidor iniciado en el puerto ${PORT}`);
+//});
+
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`Servidor iniciado en el puerto ${PORT}`);
+  });
+}
 
 // Configuración inicial
 (async () => {
@@ -67,4 +74,4 @@ app.listen(PORT, () => {
   }
 })();
 
-export { app };
+export default app;
